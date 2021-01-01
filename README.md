@@ -1,3 +1,9 @@
+# UPREP
+
+## Go to app
+
+Follow the [link](https://sonybean20.github.io/uprep/index.html) to view the app.
+
 ## Available Scripts
 
 In the project directory, you can run:
