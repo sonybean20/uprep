@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/uprep/static/css/main.ab7136cd.chunk.css",
-    "main.js": "/uprep/static/js/main.c1ddd0ef.chunk.js",
-    "main.js.map": "/uprep/static/js/main.c1ddd0ef.chunk.js.map",
-    "runtime-main.js": "/uprep/static/js/runtime-main.a5ec1431.js",
-    "runtime-main.js.map": "/uprep/static/js/runtime-main.a5ec1431.js.map",
-    "static/js/2.ffb10f19.chunk.js": "/uprep/static/js/2.ffb10f19.chunk.js",
-    "static/js/2.ffb10f19.chunk.js.map": "/uprep/static/js/2.ffb10f19.chunk.js.map",
-    "static/js/3.129c9427.chunk.js": "/uprep/static/js/3.129c9427.chunk.js",
-    "static/js/3.129c9427.chunk.js.map": "/uprep/static/js/3.129c9427.chunk.js.map",
-    "index.html": "/uprep/index.html",
-    "static/css/main.ab7136cd.chunk.css.map": "/uprep/static/css/main.ab7136cd.chunk.css.map",
-    "static/js/2.ffb10f19.chunk.js.LICENSE.txt": "/uprep/static/js/2.ffb10f19.chunk.js.LICENSE.txt",
-    "static/media/logo.6ce24c58.svg": "/uprep/static/media/logo.6ce24c58.svg"
+    "main.css": "/uprep/index.html/static/css/main.ab7136cd.chunk.css",
+    "main.js": "/uprep/index.html/static/js/main.c1ddd0ef.chunk.js",
+    "main.js.map": "/uprep/index.html/static/js/main.c1ddd0ef.chunk.js.map",
+    "runtime-main.js": "/uprep/index.html/static/js/runtime-main.7c0f430a.js",
+    "runtime-main.js.map": "/uprep/index.html/static/js/runtime-main.7c0f430a.js.map",
+    "static/js/2.ffb10f19.chunk.js": "/uprep/index.html/static/js/2.ffb10f19.chunk.js",
+    "static/js/2.ffb10f19.chunk.js.map": "/uprep/index.html/static/js/2.ffb10f19.chunk.js.map",
+    "static/js/3.129c9427.chunk.js": "/uprep/index.html/static/js/3.129c9427.chunk.js",
+    "static/js/3.129c9427.chunk.js.map": "/uprep/index.html/static/js/3.129c9427.chunk.js.map",
+    "index.html": "/uprep/index.html/index.html",
+    "static/css/main.ab7136cd.chunk.css.map": "/uprep/index.html/static/css/main.ab7136cd.chunk.css.map",
+    "static/js/2.ffb10f19.chunk.js.LICENSE.txt": "/uprep/index.html/static/js/2.ffb10f19.chunk.js.LICENSE.txt",
+    "static/media/logo.6ce24c58.svg": "/uprep/index.html/static/media/logo.6ce24c58.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.a5ec1431.js",
+    "static/js/runtime-main.7c0f430a.js",
     "static/js/2.ffb10f19.chunk.js",
     "static/css/main.ab7136cd.chunk.css",
     "static/js/main.c1ddd0ef.chunk.js"
