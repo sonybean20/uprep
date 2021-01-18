@@ -47,6 +47,6 @@ Install dependencies:
 
 `yarn install`
 
-Run frontend:
+Run frontend on http://localhost:3000 :
 
 `yarn start`
