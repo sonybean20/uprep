@@ -1,81 +1,157 @@
 import React, { Component } from "react";
 import Modal from "./components/Modal";
+import Nav from './components/Nav';
+import LoginForm from './components/LoginForm';
+import SignupForm from './components/SignupForm';
 import axios from "axios";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewCompleted: false,
-      activeItem: {
-        title: "",
-        description: "",
-        completed: false
-      },
-      todoList: []
+      displayed_form: '',
+      logged_in: localStorage.getItem('token') ? true : false,
+      username: '',
+      categoryList: [],
+      activeCategory: undefined,
+      postList: [],
+      activePost: null,
     };
   }
   componentDidMount() {
-    this.refreshList();
+    if (this.state.logged_in) {
+      axios
+        .get(
+          '/uprep/current_user/',
+          {
+            headers: {
+              Authorization: `JWT ${localStorage.getItem('token')}`
+            }
+          }
+        )
+        .then(res => {
+          this.setState({ username: res.data.username });
+        });
+    }
+    this.refreshCategories();
+    this.refreshPosts();
   }
-  refreshList = () => {
+  handle_login = (e, data) => {
+    e.preventDefault();
     axios
-      .get("http://localhost:8000/api/todos/")
-      .then(res => this.setState({ todoList: res.data }))
+      .post('/token-auth/', data)
+      .then(res => {
+        localStorage.setItem('token', res.data.token);
+        this.setState({
+          logged_in: true,
+          displayed_form: '',
+          username: res.data.user.username
+        });
+      })
+      .catch(err => {
+        localStorage.removeItem('token');
+        this.setState({ 
+          logged_in: false, 
+          username: '' 
+        });
+        window.alert('Could not login');
+        console.log(err);
+      });
+  };
+
+  handle_signup = (e, data) => {
+    e.preventDefault();
+    axios
+      .post('/uprep/users/', data)
+      .then(res => {
+        localStorage.setItem('token', res.data.token);
+        this.setState({
+          logged_in: true,
+          displayed_form: '',
+          username: res.data.username
+        });
+      });
+  };
+
+  handle_logout = () => {
+    localStorage.removeItem('token');
+    this.setState({ logged_in: false, username: '' });
+  };
+
+  display_form = form => {
+    this.setState({
+      displayed_form: form
+    });
+  };
+
+  refreshCategories = () => {
+    axios
+      .get("/api/categories/")
+      .then(res => this.setState({ 
+        categoryList: res.data,  
+        activeCategory: res.data[0].id
+      }))
       .catch(err => console.log(err));
   };
-  displayCompleted = status => {
-    if (status) {
-      return this.setState({ viewCompleted: true });
-    }
-    return this.setState({ viewCompleted: false });
+  refreshPosts = () => {
+    if (this.state.activeCategory === null) return; 
+    axios
+      .get("/api/posts/")
+      .then(res => this.setState({ postList: res.data }))
+      .catch(err => console.log(err));
   };
-  renderTabList = () => {
+  setCategory = category_id => {
+    return this.setState({ activeCategory : category_id });
+  };
+  renderCategoryList = () => {
+    const { categoryList } = this.state;
+    const items = []
+
+    for (let i = 0; i < categoryList.length; i++) {
+      const c = categoryList[i];
+      items.push(
+        <span 
+          key={c.id}
+          onClick={() => this.setCategory(c.id)} 
+          className={this.state.activeCategory === c.id ? "active" : ""}
+        >
+          {c.name}
+        </span>
+      );
+    }
     return (
       <div className="my-5 tab-list">
-        <span
-          onClick={() => this.displayCompleted(true)}
-          className={this.state.viewCompleted ? "active" : ""}
-        >
-          complete
-        </span>
-        <span
-          onClick={() => this.displayCompleted(false)}
-          className={this.state.viewCompleted ? "" : "active"}
-        >
-          Incomplete
-        </span>
+        {items}
       </div>
     );
   };
-  renderItems = () => {
-    const { viewCompleted } = this.state;
-    const newItems = this.state.todoList.filter(
-      item => item.completed === viewCompleted
+  renderPosts = () => {
+    const { activeCategory } = this.state;
+    const { postList } = this.state;
+    const postsInCategory = postList.filter(
+      post => post.category === activeCategory
     );
-    return newItems.map(item => (
+    return postsInCategory.map(post => (
       <li
-        key={item.id}
+        key={post.id}
         className="list-group-item d-flex justify-content-between align-items-center"
       >
         <span
-          className={`todo-title mr-2 ${
-            this.state.viewCompleted ? "completed-todo" : ""
-          }`}
-          title={item.description}
+          className={"todo-title mr-2"}
+          title={post.content}
         >
-          {item.title}
+          {post.title}
         </span>
         <span>
           <button
-            onClick={() => this.editItem(item)}
+            onClick={() => this.editPost(post)}
             className="btn btn-secondary mr-2"
           >
             {" "}
             Edit{" "}
           </button>
           <button
-            onClick={() => this.handleDelete(item)}
+            onClick={() => this.handleDelete(post)}
             className="btn btn-danger"
           >
             Delete{" "}
@@ -91,48 +167,72 @@ class App extends Component {
     this.toggle();
     if (item.id) {
       axios
-        .put(`http://localhost:8000/api/todos/${item.id}/`, item)
-        .then(res => this.refreshList());
+        .put(`/api/posts/${item.id}/`, item)
+        .then(res => this.refreshPosts());
       return;
     }
     axios
-      .post("http://localhost:8000/api/todos/", item)
-      .then(res => this.refreshList());
+      .post("/api/posts/", item)
+      .then(res => this.refreshPosts());
   };
   handleDelete = item => {
     axios
-      .delete(`http://localhost:8000/api/todos/${item.id}`)
-      .then(res => this.refreshList());
+      .delete(`/api/posts/${item.id}`)
+      .then(res => this.refreshPosts());
   };
-  createItem = () => {
-    const item = { title: "", description: "", completed: false };
-    this.setState({ activeItem: item, modal: !this.state.modal });
+  createPost = () => {
+    const post = { title: "", category: undefined, content: "" };
+    this.setState({ activePost: post, modal: !this.state.modal });
   };
-  editItem = item => {
-    this.setState({ activeItem: item, modal: !this.state.modal });
+  editPost = post => {
+    this.setState({ activePost: post, modal: !this.state.modal });
   };
   render() {
+    let form;
+    switch (this.state.displayed_form) {
+      case 'login':
+        form = <LoginForm handle_login={this.handle_login} />;
+        break;
+      case 'signup':
+        form = <SignupForm handle_signup={this.handle_signup} />;
+        break;
+      default:
+        form = null;
+    }
+
     return (
       <main className="content">
+        <Nav
+          logged_in={this.state.logged_in}
+          display_form={this.display_form}
+          handle_logout={this.handle_logout}
+        />
+        {form}
+        <h3>
+          {this.state.logged_in
+            ? `Hello, ${this.state.username}`
+            : 'Please Log In'}
+        </h3>
         <h1 className="text-white text-uppercase text-center my-4">UPREP</h1>
         <div className="row ">
           <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
               <div className="">
-                <button onClick={this.createItem} className="btn btn-primary">
-                  Add task
+                <button onClick={this.createPost} className="btn btn-primary">
+                  New Post
                 </button>
               </div>
-              {this.renderTabList()}
+              {this.renderCategoryList()}
               <ul className="list-group list-group-flush">
-                {this.renderItems()}
+                {this.renderPosts()}
               </ul>
             </div>
           </div>
         </div>
         {this.state.modal ? (
           <Modal
-            activeItem={this.state.activeItem}
+            activePost={this.state.activePost}
+            categoryList={this.state.categoryList}
             toggle={this.toggle}
             onSave={this.handleSubmit}
           />

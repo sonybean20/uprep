@@ -30,7 +30,7 @@ Run migrations:
 
 Create a superuser account for admin access:
 
-`python manage.py createsuperuser`
+`python manage.py createsuperuser --username=joe --email=joe@example.com`
 
 Run backend on http://localhost:8000 and manage on http://localhost:8000/admin :
 

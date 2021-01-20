@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
 import {
     Button,
     Modal,
@@ -14,23 +15,23 @@ import {
 export default class CustomModal extends Component {
     constructor(props) {
     super(props);
+    const { activePost, categoryList } = this.props;
     this.state = {
-        activeItem: this.props.activeItem
+        activePost: activePost,
+        categoryList: categoryList,
     };
     }
     handleChange = e => {
-    let { name, value } = e.target;
-    if (e.target.type === "checkbox") {
-        value = e.target.checked;
-    }
-    const activeItem = { ...this.state.activeItem, [name]: value };
-    this.setState({ activeItem });
+        let { name, value } = e.target;
+        const activePost = { ...this.state.activePost, [name]: value };
+        this.setState({ activePost });
     };
     render() {
     const { toggle, onSave } = this.props;
+    const categoryOptions = this.state.categoryList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)
     return (
         <Modal isOpen={true} toggle={toggle}>
-        <ModalHeader toggle={toggle}> Todo Item </ModalHeader>
+        <ModalHeader toggle={toggle}>Post Editor</ModalHeader>
         <ModalBody>
             <Form>
             <FormGroup>
@@ -38,36 +39,36 @@ export default class CustomModal extends Component {
                 <Input
                 type="text"
                 name="title"
-                value={this.state.activeItem.title}
+                value={this.state.activePost.title}
                 onChange={this.handleChange}
-                placeholder="Enter Todo Title"
+                placeholder="Enter Title"
                 />
             </FormGroup>
             <FormGroup>
-                <Label for="description">Description</Label>
+                <Label for="category">Category</Label>
                 <Input
-                type="text"
-                name="description"
-                value={this.state.activeItem.description}
-                onChange={this.handleChange}
-                placeholder="Enter Todo description"
-                />
+                type="select"
+                name="category"
+                value={this.state.activePost.category}
+                onChange={this.handleChange}>
+                    <option value={undefined}>-- Select --</option>
+                    {categoryOptions}
+                </Input>
             </FormGroup>
-            <FormGroup check>
-                <Label for="completed">
+            <FormGroup>
+                <Label for="content">Content</Label>
                 <Input
-                    type="checkbox"
-                    name="completed"
-                    checked={this.state.activeItem.completed}
-                    onChange={this.handleChange}
+                type="textarea"
+                name="content"
+                value={this.state.activePost.content}
+                onChange={this.handleChange}
+                placeholder="Enter content"
                 />
-                Completed
-                </Label>
             </FormGroup>
             </Form>
         </ModalBody>
         <ModalFooter>
-            <Button color="success" onClick={() => onSave(this.state.activeItem)}>
+            <Button color="success" onClick={() => onSave(this.state.activePost)}>
             Save
             </Button>
         </ModalFooter>
@@ -75,3 +76,10 @@ export default class CustomModal extends Component {
     );
     }
 }
+
+CustomModal.propTypes = {
+    activePost: PropTypes.object.isRequired,
+    categoryList: PropTypes.array.isRequired,
+    toggle: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+};
