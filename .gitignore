@@ -131,7 +131,6 @@ media/
 *.pyc
 *.db
 *.pid
-*.lock
 
 # Only for Development
 **/migrations/**
